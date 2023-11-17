@@ -1,10 +1,6 @@
-import { IsString, IsNotEmpty, MaxLength, isNumber, IsNumber, IsInt, IsPositive, Validate } from 'class-validator';
+import { IsString, IsNotEmpty, MaxLength, isNumber, IsNumber, IsInt, IsPositive, Validate, IsNumberString } from 'class-validator';
 
 export class CreatePersonajeDto {
-  @IsInt({ message: 'El campo debe ser un número entero' })
-  @IsPositive({ message: 'El campo debe ser un número positivo' })
-  id:number;
-
   @IsNotEmpty({ message: 'El nombre no puede estar vacío' })
   @IsString({ message: 'El nombre debe ser una cadena de texto' })
   @MaxLength(50, { message: 'El nombre no puede tener más de 50 caracteres' })
