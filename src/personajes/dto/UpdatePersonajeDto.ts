@@ -8,7 +8,7 @@ export class UpdatePersonajeDto extends PartialType(CreatePersonajeDto) {
   id:number;
 
   @IsNotEmpty({ message: 'El nombre no puede estar vacío' })
-  @IsArray({ message: 'no es un array' })
+  @IsString({ message: 'no numeros' })
   nombre: string;
 
   @IsString({ message: 'no se actualizó el personaje' })

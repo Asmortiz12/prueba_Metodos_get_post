@@ -6,10 +6,10 @@ import { PersonajesModule } from './personajes.module';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { error } from 'console';
+import { PaginacionDto } from 'src/common/dto/paginacion.dto';
 
 @Injectable()
 export class PersonajesService {
-   private personaje:Personaje[]=[]
 constructor(
 @InjectRepository(Personaje)
 private readonly personajeRepository:Repository<Personaje>){}
@@ -27,25 +27,18 @@ private readonly personajeRepository:Repository<Personaje>){}
   }
     
   }
-  findAll() {
+  findAll(paginacionDto:PaginacionDto) {
+    const {limit=10, offset=1}=paginacionDto
+    return this.personajeRepository.find({
+      take:limit,
+      skip:offset
+    })
+
+
+
     return this.personajeRepository.find();
   }
 
-  findByName(nombre: string): Personaje[] {
-    const personajePorNombre= this.personaje.filter(filtar => filtar.nombre.includes(nombre));
-    if (!personajePorNombre.length) {
-      throw new Error(`No se encontro el personje con el nombre "${nombre}"`);
-    }
-    return personajePorNombre;
- }
-
- findByLetter(letra: string): Personaje[] {
-  const personajePorLetra = this.personaje.filter(filtra => filtra.nombre.includes(letra));
-  if (!personajePorLetra.length) {
-    throw new Error(`no e encontro al presonaje"${letra}"`);
-  }
-  return personajePorLetra
-  }
 
   async findOne(id: number) {
     const personaje = await this.personajeRepository.findOneBy( {id});
@@ -58,20 +51,20 @@ private readonly personajeRepository:Repository<Personaje>){}
   }
   
 
-  update(id: number, _updatePersonajeDto: UpdatePersonajeDto) {
-    const personaje = this.personajeRepository.update({id}, _updatePersonajeDto)
-
+  async update(id: number, updatePersonajeDto: UpdatePersonajeDto) {
+    const personaje = await this.personajeRepository.preload({
+      id:id,
+  ...updatePersonajeDto
+    })  
+    if(!personaje){
+      throw new NotFoundException('No de puede eliminar ')
     }
+    await this.personajeRepository.save(personaje);
+    return personaje
+     }
 
-  remove(id: number) {
-    const personajeIndex = this.personaje.findIndex(data => data.id === id);
-
-    if (personajeIndex === -1) {
-      throw new NotFoundException('No existe el personaje con el ID proporcionado');
-    }
-  
-    const removedPersonaje = this.personaje.splice(personajeIndex, 1);
-  
-    return removedPersonaje[0];
-  }
+  async remove(id: number) {
+    const personaje = await this.findOne(id);
+return this.personajeRepository.delete(personaje)
+}
 }

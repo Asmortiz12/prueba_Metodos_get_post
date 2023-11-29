@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { PersonajesModule } from './personajes/personajes.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       password: process.env.DB_PASSWORD,
       autoLoadEntities:true, //carge automaticamente las entidades
       synchronize:true //en produccion se debe poner falso
-    })],
+    }),
+    CommonModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UsePipes, ValidationPipe} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UsePipes, ValidationPipe, Query} from '@nestjs/common';
 import { PersonajesService } from './personajes.service';
 import { CreatePersonajeDto } from './dto/create-personaje.dto';
 import { UpdatePersonajeDto } from './dto/UpdatePersonajeDto';
 import { Personaje } from '/home/asom/Proyectos/Nest/clase003/src/personajes/entities/personaje.entity';
+import { PaginacionDto } from 'src/common/dto/paginacion.dto';
 
 @Controller('personajes')
 export class PersonajesController {
@@ -15,28 +16,24 @@ export class PersonajesController {
   }
 
   @Get()
-  findAll() {
-    return this.personajesService.findAll();
+  findAll(@Query() paginacionDto:PaginacionDto) {
+    return this.personajesService.findAll(paginacionDto);
   }
 
   @Get(':id')
   findOne(@Param('id',ParseIntPipe) id: number) {
-    return this.personajesService.findOne(+id);
+    return this.personajesService.findOne(id);
   }
-  @Get('nombre/:nombre')
-  findByName(@Param('nombre') nombre: string) {
-  return this.personajesService.findByName(nombre);
-    }
-
-  @Get('letra/:letra')
- findByLetter(@Param('letra') nombre: string) {
-  return this.personajesService.findByLetter(nombre);
-}
 
   
   @Patch(':id')
   update(@Param('id') id: number, @Body() updatePersonajeDto: UpdatePersonajeDto) {
     return this.personajesService.update(+id, updatePersonajeDto);
   }
+
+  @Delete(':id')
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.personajesService.remove(id);
+}
 
 }
