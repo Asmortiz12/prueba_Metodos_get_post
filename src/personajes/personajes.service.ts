@@ -1,38 +1,40 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePersonajeDto } from './dto/create-personaje.dto';
 import { UpdatePersonajeDto } from './dto/UpdatePersonajeDto';
 import { Personaje } from './entities/personaje.entity';
 import { PersonajesModule } from './personajes.module';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { error } from 'console';
 
 @Injectable()
 export class PersonajesService {
-   private personaje:Personaje[]=[
-    { id: 1, nombre: 'Scorpion', descripcion: 'Un ninja espectro que busca venganza.' },
-    { id: 2, nombre: 'Sub-Zero', descripcion: 'Maestro de la criomancia y rival de Scorpion.' },
-    { id: 3, nombre: 'Liu Kang', descripcion: 'Luchador de Kung Fu y campeón del Earthrealm.' },
-    { id: 4, nombre: 'Sonya Blade', descripcion: 'Agente de las fuerzas especiales y amiga de Jax.' },
-  ]
-
+   private personaje:Personaje[]=[]
+constructor(
+@InjectRepository(Personaje)
+private readonly personajeRepository:Repository<Personaje>){}
   
-  create(createPersonajeDto: CreatePersonajeDto) {
-    const nuevoPersonaje: Personaje = {
-      id :CreatePersonajeDto.length+1,
-      nombre: createPersonajeDto.nombre,
-      descripcion: createPersonajeDto.descripcion,
-    };
+  async create(createPersonajeDto: CreatePersonajeDto) {
 
-    this.personaje.push(nuevoPersonaje);
+  try{
 
+    const nuevoPersonaje = this.personajeRepository.create(createPersonajeDto);
+    await this.personajeRepository.save(nuevoPersonaje);
     return nuevoPersonaje;
+  } catch{
+    console.log(error)
+    throw new Error('no se puede pa');
+  }
+    
   }
   findAll() {
-    return this.personaje;
+    return this.personajeRepository.find();
   }
 
   findByName(nombre: string): Personaje[] {
     const personajePorNombre= this.personaje.filter(filtar => filtar.nombre.includes(nombre));
     if (!personajePorNombre.length) {
-      throw new Error(`No se encontraron muebles con el nombre "${nombre}"`);
+      throw new Error(`No se encontro el personje con el nombre "${nombre}"`);
     }
     return personajePorNombre;
  }
@@ -45,29 +47,20 @@ export class PersonajesService {
   return personajePorLetra
   }
 
-  findOne(id: number) {
-    const personaje = this.personaje.find(data => data.id == id);
+  async findOne(id: number) {
+    const personaje = await this.personajeRepository.findOneBy( {id});
   
   
     if (!personaje) {
-      throw new NotFoundException('No existe el personaje');
+      throw new NotFoundException('No existe el personaje ')
     }
-  
     return personaje;
   }
   
 
   update(id: number, _updatePersonajeDto: UpdatePersonajeDto) {
-    const personajeIndex = this.personaje.findIndex(data => data.id === id);
+    const personaje = this.personajeRepository.update({id}, _updatePersonajeDto)
 
-    if (personajeIndex === -1) {
-      throw new NotFoundException('No existe el personaje con el ID proporcionado');
-    }
-  
-    this.personaje[personajeIndex].nombre = _updatePersonajeDto.nombre;
-    this.personaje[personajeIndex].descripcion = _updatePersonajeDto.descripcion;
-  
-    return this.personaje[personajeIndex];
     }
 
   remove(id: number) {

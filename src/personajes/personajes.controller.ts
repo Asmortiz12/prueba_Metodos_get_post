@@ -15,7 +15,7 @@ export class PersonajesController {
   }
 
   @Get()
-  findAll():Personaje[] {
+  findAll() {
     return this.personajesService.findAll();
   }
 
@@ -24,18 +24,18 @@ export class PersonajesController {
     return this.personajesService.findOne(+id);
   }
   @Get('nombre/:nombre')
-  findByName(@Param('nombre') nombre: string): Personaje[] {
+  findByName(@Param('nombre') nombre: string) {
   return this.personajesService.findByName(nombre);
     }
 
   @Get('letra/:letra')
- findByLetter(@Param('letra') nombre: string): Personaje[] {
+ findByLetter(@Param('letra') nombre: string) {
   return this.personajesService.findByLetter(nombre);
 }
 
   
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePersonajeDto: UpdatePersonajeDto): import("/home/asom/Proyectos/Nest/clase003/src/personajes/entities/personaje.entity").Personaje {
+  update(@Param('id') id: number, @Body() updatePersonajeDto: UpdatePersonajeDto) {
     return this.personajesService.update(+id, updatePersonajeDto);
   }
 
