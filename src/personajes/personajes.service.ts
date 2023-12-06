@@ -33,10 +33,6 @@ private readonly personajeRepository:Repository<Personaje>){}
       take:limit,
       skip:offset
     })
-
-
-
-    return this.personajeRepository.find();
   }
 
 
@@ -65,6 +61,6 @@ private readonly personajeRepository:Repository<Personaje>){}
 
   async remove(id: number) {
     const personaje = await this.findOne(id);
-return this.personajeRepository.delete(personaje)
+return this.personajeRepository.remove(personaje)
 }
 }

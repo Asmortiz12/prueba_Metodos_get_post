@@ -32,7 +32,7 @@ export class PersonajesController {
   }
 
   @Delete(':id')
-  delete(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.personajesService.remove(id);
 }
 
